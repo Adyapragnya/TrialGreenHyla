@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react"; // Import useContext
+import { useState, useContext } from "react"; // Import useContext
 import { Link, useNavigate } from "react-router-dom";
 import ArgonBox from "components/ArgonBox";
 import ArgonTypography from "components/ArgonTypography";
@@ -18,15 +18,9 @@ function Illustration() {
   const [rememberMe, setRememberMe] = useState(false);
   
   const navigate = useNavigate();
-  const { setRole, setId, setIsAuthenticated,loginEmail, setLoginEmail,adminId, setAdminId } = useContext(AuthContext); // Get setRole and setIsAuthenticated from AuthContext
+  const { setRole, setId, setIsAuthenticated } = useContext(AuthContext); // Get setRole and setIsAuthenticated from AuthContext
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
-
-  // Log loginEmail whenever it updates
-  useEffect(() => {
-    console.log('Updated loginEmail:', loginEmail);
-
-  }, [loginEmail]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -54,10 +48,9 @@ function Illustration() {
       return;
     }
   
-    // // Send credentials to backend
+    // Send credentials to backend
     try {
       const baseURL = process.env.REACT_APP_API_BASE_URL;
-      console.log(baseURL);
       const response = await fetch(`${baseURL}/api/signin`, {
         method: "POST",
         headers: {
@@ -65,35 +58,20 @@ function Illustration() {
         },
         body: JSON.stringify({ email, password }),
       });
-      console.log('eeeeeemail',email);
-      console.log('pppppassword',password);
   
       const data = await response.json();
-       if (!response.ok) {
-    const errorMessage = await response.text(); // Extract error from response
-    throw new Error(`HTTP Error: ${response.status} - ${errorMessage}`);
-  }
   
       if (response.ok) {
         // Decode token to extract role
-       
-
         const decodedToken = jwtDecode(data.token);
         const userRole = decodedToken.role; // Extract role
         const ID = decodedToken.id; // Extract userloginid
-        const userEmail =  decodedToken.email;
-        const adminId =  decodedToken.AdminId;
+
         setRole(userRole); // Update role in AuthContext
         console.log("User role:", userRole); // Check role in console
 
         setId(ID);
         console.log("User role:", ID); 
-
-        setLoginEmail(userEmail);
-        console.log('user email',loginEmail);
-
-        setAdminId(adminId);
-       
         await Swal.fire({
           title: "Success!",
           text: data.message || "You have successfully signed in.",
@@ -107,7 +85,7 @@ function Illustration() {
         // Update authentication state
         setIsAuthenticated(true); // Ensure the state reflects authentication status
         
-        navigate("/HYLA"); // Redirect
+        navigate("/SalesRadar"); // Redirect
         console.log("Token stored:", data.token);
         console.log("User role:", userRole); // Check role in console
       } else {
