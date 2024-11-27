@@ -69,6 +69,10 @@ function Illustration() {
       console.log('pppppassword',password);
   
       const data = await response.json();
+       if (!response.ok) {
+    const errorMessage = await response.text(); // Extract error from response
+    throw new Error(`HTTP Error: ${response.status} - ${errorMessage}`);
+  }
   
       if (response.ok) {
         // Decode token to extract role
